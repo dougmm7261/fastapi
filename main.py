@@ -32,7 +32,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/mcp", mcp.sse_app())
+app.include_router(mcp.router, prefix="/mcp")
+
 
 @app.get("/")
 def root():
