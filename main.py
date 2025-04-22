@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware          # ← add this line
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel
 import uuid
@@ -16,14 +17,21 @@ class PingParams(BaseModel):
 def ping(params: PingParams):
     return {
         "content": [
-            {
-                "type": "text",
-                "text": f"pong (session) from railway‑py to {params.client}"
-            }
+            { "type": "text",
+              "text": f"pong (session) from railway‑py to {params.client}" }
         ]
     }
 
 app = FastAPI()
+
+# 💡 add CORS middleware so the browser’s OPTIONS request succeeds
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.mount("/mcp", mcp.sse_app())
 
 @app.get("/")
